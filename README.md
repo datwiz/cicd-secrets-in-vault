@@ -55,7 +55,7 @@ vault write auth/approle/role/fake-role \
 
 4.  Retrieve the newly created appRole ID.
 ```
-vault read auth/approle/role/fake-role
+vault read auth/approle/role/fake-role/role-id
 ```
 Take note of the role-id returned.
 
