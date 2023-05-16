@@ -19,7 +19,8 @@ Refer to the Vault documentation for further information on using the AppRole au
 | VAULT_ADDR | url of the Vault service | https://vault.example.com:8200 |
 | VAULT_ROLE_ID | Vault appRole ID to be used by the CICD job | db02de05-fa39-4855-059b-67221c5c2f63 |
 | VAULT_SECRET_ID | Vault secret associated with the appRole ID | 6a174c20-f6de-a53c-74d2-6018fcceff64 |
-| VAULT_VAR_FILE | Temporary file used to set environment variables | /var/tmp/vault-vars.sh |
+| VAULT_NAMESPACE | Namespace in Vault, if omitted work without namespace e.g. for Hashi Vault OpenSource | name/space |
+| VAULT_VAR_PREFIX | Prefix for the varibles holding vault pathes, optional, defaults to V_ | V_ |
 
 ### Workflow
 An example workflow to replace a `FAKE_APP_PASSWORD` varialbe in a CICD job with a Vault sourced secret.
@@ -71,6 +72,14 @@ script:
   - get-vault-secrets-by-approle > ${VAULT_VAR_FILE}
   - source ${VAULT_VAR_FILE} && rm ${VAULT_VAR_FILE}
 ```
+
+optional to omit writing secrets to a file
+```
+script:
+  - source <(get-vault-secrets-by-approle)
+```
+
+
 While the the helper script `get-vault-secrets-by-approle` could be executed and sourced in a single step splitting into 2 steps aids in
 trouble shooting.  If executed and sourced in a single command, any error messages, such as permissions errors, get processed by the
 `source` statement and don't get printed to the job logs.  
@@ -80,7 +89,6 @@ trouble shooting.  If executed and sourced in a single command, any error messag
 VAULT_ADDR=https://vault.example.com:8200
 VAULT_ROLE_ID=db02de05-fa39-4855-059b-67221c5c2f63
 VAULT_SECRET_ID=6a174c20-f6de-a53c-74d2-6018fcceff64
-VAULT_VAR_FILE=/var/tmp/vault-vars.sh
 ``` 
 
 8.  In the CICD server, remove the `FAKE_APP_PASSWORD` variable from the job configuration.
